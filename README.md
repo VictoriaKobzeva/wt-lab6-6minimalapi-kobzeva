@@ -14,3 +14,5 @@
 ## Запуск локально
 ```bash
 dotnet run
+## Опубликованное приложение
+https://wt-lab6-6minimalapi-kobzeva.onrender.com
