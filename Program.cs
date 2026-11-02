@@ -57,15 +57,21 @@ app.MapGet("/api/properties", (string? search) =>
 app.MapGet("/api/properties/{id}", (int id) =>
 {
     var property = PropertyStore.Properties.FirstOrDefault(x => x.Id == id);
-    
+
     if (property == null)
         return Results.NotFound();
 
     return Results.Ok(property);
 });
+
 // --- Блок 4: POST запрос (создание) ---
 app.MapPost("/api/properties", (Property property) =>
 {
+    // Валидация входных данных — 400 Bad Request
+    var validationError = ValidateProperty(property);
+    if (validationError is not null)
+        return Results.BadRequest(new { error = validationError });
+
     // Автогенерация ID
     var newId = PropertyStore.Properties.Count == 0
         ? 1
@@ -83,6 +89,11 @@ app.MapPut("/api/properties/{id}", (int id, Property updatedProperty) =>
     var property = PropertyStore.Properties.FirstOrDefault(x => x.Id == id);
     if (property == null)
         return Results.NotFound();
+
+    // Валидация входных данных — 400 Bad Request
+    var validationError = ValidateProperty(updatedProperty);
+    if (validationError is not null)
+        return Results.BadRequest(new { error = validationError });
 
     property.Address = updatedProperty.Address;
     property.Type = updatedProperty.Type;
@@ -104,4 +115,29 @@ app.MapDelete("/api/properties/{id}", (int id) =>
     PropertyStore.Properties.Remove(property);
     return Results.NoContent(); // 204 No Content
 });
-app.Run();
+
+// --- Порт для Render / Docker ---
+// Render передаёт номер порта в переменной окружения PORT.
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+app.Run($"http://0.0.0.0:{port}");
+
+// Проверка обязательных полей и корректности данных.
+static string? ValidateProperty(Property property)
+{
+    if (string.IsNullOrWhiteSpace(property.Address))
+        return "Address is required.";
+
+    if (string.IsNullOrWhiteSpace(property.Type))
+        return "Type is required.";
+
+    if (property.Price <= 0)
+        return "Price must be greater than zero.";
+
+    if (property.Area <= 0)
+        return "Area must be greater than zero.";
+
+    if (property.Rooms <= 0)
+        return "Rooms must be greater than zero.";
+
+    return null;
+}
