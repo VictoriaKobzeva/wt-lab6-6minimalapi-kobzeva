@@ -1,9 +1,30 @@
 using wt_lab6_6minimalapi_kobzeva.Models;
 using wt_lab6_6minimalapi_kobzeva.Data;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- Swagger / OpenAPI ---
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "WT-6 Minimal API — Недвижимость",
+        Version = "v1",
+        Description = "Лабораторная работа WT-6: REST API на ASP.NET Core Minimal API"
+    });
+});
+
 var app = builder.Build();
+
+// --- Swagger UI ---
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "WT-6 Minimal API v1");
+    options.RoutePrefix = "swagger";
+});
 
 // --- Блок 1: Базовые эндпоинты ---
 app.MapGet("/", () => "Minimal API работает!");

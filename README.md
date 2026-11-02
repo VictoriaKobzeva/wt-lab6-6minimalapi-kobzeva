@@ -11,8 +11,16 @@
 | PUT | /api/properties/{id} | изменить объект |
 | DELETE | /api/properties/{id} | удалить объект |
 
+## Swagger
+После запуска документация доступна по адресам:
+
+- Swagger UI: `http://localhost:5064/swagger`
+- OpenAPI JSON: `http://localhost:5064/swagger/v1/swagger.json`
+
 ## Запуск локально
 ```bash
 dotnet run
+```
+
 ## Опубликованное приложение
 https://wt-lab6-6minimalapi-kobzeva.onrender.com
